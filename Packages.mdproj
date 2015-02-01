@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ItemType>PackagingProject</ItemType>
+    <ProjectGuid>{DDB2F8DF-D1D4-4620-836E-260D300971D6}</ProjectGuid>
+    <Packages>
+      <Packages xmlns="">
+        <Package name="Microsoft Windows Binaries">
+          <Builder targetFile="RepeatedFileFinder.zip" platform="Windows" configuration="Release|x86" ctype="BinariesZipPackageBuilder">
+            <ChildEntries>
+              <SolutionItemReference path="RepeatedFileFinder\RepeatedFileFinder.csproj" />
+            </ChildEntries>
+            <RootEntry path="RepeatedFileFinder.sln" id=":root:" />
+          </Builder>
+        </Package>
+      </Packages>
+    </Packages>
+  </PropertyGroup>
+</Project>
