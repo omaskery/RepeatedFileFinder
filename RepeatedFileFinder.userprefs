@@ -1,0 +1,13 @@
+﻿<Properties StartupItem="RepeatedFileFinder\RepeatedFileFinder.csproj">
+  <AuthorInfo Name="Oliver Maskery" Email="omaskery@googlemail.com" Copyright="Oliver Maskery 2015" Company="N/A" Trademark="" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="RepeatedFileFinder\MainWindow.cs">
+    <Files>
+      <File FileName="RepeatedFileFinder\MainWindow.cs" Line="5" Column="5" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
