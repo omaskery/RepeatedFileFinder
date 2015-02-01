@@ -46,10 +46,10 @@ public partial class MainWindow: Gtk.Window
 				RunSearch(lblSearchPath.LabelProp);
 			}
 			catch(IOException ex) {
-				DisplayErrorDialog("An input/output error occurred during the search:\n\n{0}", ex);
+				DisplayErrorDialog("An input/output error occurred during the search:\n\n{0}", ex.Message);
 			}
 			catch(UnauthorizedAccessException ex) {
-				DisplayErrorDialog("Unable to search this directory due to a permissions issue:\n\n{0}", ex);
+				DisplayErrorDialog("Unable to search this directory due to a permissions issue:\n\n{0}", ex.Message);
 			}
 
 			Application.Invoke(delegate {
@@ -57,6 +57,7 @@ public partial class MainWindow: Gtk.Window
 				btnCancelSearch.Sensitive = false;
 				Background = null;
 			});
+
 			Console.WriteLine("Search thread stopping");
 		}));
 
@@ -87,7 +88,7 @@ public partial class MainWindow: Gtk.Window
 	private void DisplayErrorDialog(string format, params object[] args)
 	{
 		Application.Invoke (delegate {
-			var dialog = new MessageDialog (this, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, format, args);
+			var dialog = new MessageDialog (this, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, false, format, args);
 			dialog.Run ();
 			dialog.Destroy ();
 		});
@@ -102,42 +103,53 @@ public partial class MainWindow: Gtk.Window
 
 		var results = new Dictionary<String, List<String>> ();
 
-		foreach (var filename in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)) {
-			try {
-				Console.WriteLine("Looking at file '{0}'...", filename);
-				var hash = CalculateFileHash(filename);
-				Console.WriteLine("  Hash: {0}", hash);
+		var directories = new Stack<String> (50);
+		directories.Push (path);
 
-				lock(results) {
-					if(results.ContainsKey(hash)) {
-						results[hash].Add(filename);
-					} else {
-						var newEntry = new List<String>(1);
-						newEntry.Add(filename);
-						results.Add(hash, newEntry);
-					}
+		//foreach (var filename in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)) {
+		while(directories.Count > 0) {
+			var folder = directories.Pop ();
+
+			foreach (var subfolder in Directory.EnumerateDirectories (folder, "*", SearchOption.TopDirectoryOnly)) {
+				try {
+					Directory.GetDirectories(subfolder);
+					directories.Push (subfolder);
+				} catch (UnauthorizedAccessException) {
+					Console.WriteLine ("Skipping path: '{0}' due to permissions", subfolder);
 				}
 			}
-			catch(IOException ex) {
-				Console.WriteLine ("IO Exception ({0}): {1}", filename, ex);
-			}
-			catch(UnauthorizedAccessException ex) {
-				Console.WriteLine ("Unauthorised Access ({0}): {1}", filename, ex);
-			}
 
-			updateCounter++;
-			if (updateCounter >= updatePeriod) {
-				updateCounter -= updatePeriod;
+			foreach (var filename in Directory.EnumerateFiles(folder, "*", SearchOption.TopDirectoryOnly)) {
+				try {
+					Console.WriteLine ("Looking at file '{0}'...", filename);
+					var hash = CalculateFileHash (filename);
+					Console.WriteLine ("  Hash: {0}", hash);
 
-				Application.Invoke (delegate {
+					lock (results) {
+						if (results.ContainsKey (hash)) {
+							results [hash].Add (filename);
+						} else {
+							var newEntry = new List<String> (1);
+							newEntry.Add (filename);
+							results.Add (hash, newEntry);
+						}
+					}
+				} catch (IOException ex) {
+					Console.WriteLine ("IO Exception ({0}): {1}", filename, ex);
+				} catch (UnauthorizedAccessException ex) {
+					Console.WriteLine ("Unauthorised Access ({0}): {1}", filename, ex);
+				}
+
+				updateCounter++;
+				if (updateCounter >= updatePeriod) {
+					updateCounter -= updatePeriod;
+
 					DisplayResults (results);
-				});
+				}
 			}
 		}
 
-		Application.Invoke (delegate {
-			DisplayResults (results);
-		});
+		DisplayResults (results);
 	}
 
 	private String CalculateFileHash(String path)
@@ -168,9 +180,11 @@ public partial class MainWindow: Gtk.Window
 			}
 		}
 
-		treeSearchResults.Model = store;
-		treeSearchResults.ExpandAll ();
-		treeSearchResults.QueueDraw ();
+		Application.Invoke (delegate {
+			treeSearchResults.Model = store;
+			treeSearchResults.ExpandAll ();
+			treeSearchResults.QueueDraw ();
+		});
 	}
 
 	private String QueryUserForSearchFolder()
