@@ -184,9 +184,15 @@ public partial class MainWindow: Gtk.Window
 		lock (results) {
 			foreach (var hash in results.Keys) {
 				if (results [hash].Count > 1) {
-					var iter = store.AppendValues (hash, "");
+					var iter = store.AppendValues (hash, results[hash][0]);
+					var first = true;
+
 					foreach (var filename in results[hash]) {
-						store.AppendValues (iter, "", filename);
+						if (first) {
+							first = false;
+						} else {
+							store.AppendValues (iter, "", filename);
+						}
 					}
 				}
 			}
