@@ -98,6 +98,7 @@ public partial class MainWindow: Gtk.Window
 	{
 		const UInt32 updatePeriod = 1000;
 		UInt32 updateCounter = 0;
+		UInt64 examinedCount = 0;
 
 		Console.WriteLine ("Beginning search from {0}", path);
 
@@ -105,6 +106,8 @@ public partial class MainWindow: Gtk.Window
 
 		var directories = new Stack<String> (50);
 		directories.Push (path);
+
+		var changed = false;
 
 		//foreach (var filename in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)) {
 		while(directories.Count > 0) {
@@ -128,6 +131,7 @@ public partial class MainWindow: Gtk.Window
 					lock (results) {
 						if (results.ContainsKey (hash)) {
 							results [hash].Add (filename);
+							changed = true;
 						} else {
 							var newEntry = new List<String> (1);
 							newEntry.Add (filename);
@@ -140,9 +144,17 @@ public partial class MainWindow: Gtk.Window
 					Console.WriteLine ("Unauthorised Access ({0}): {1}", filename, ex);
 				}
 
+				examinedCount++;
+
+				Application.Invoke (delegate {
+					lblPath.LabelProp = String.Format("Current Path: {0}", folder);
+					lblFileCount.LabelProp = String.Format("File Examined: {0}", examinedCount);
+				});
+
 				updateCounter++;
-				if (updateCounter >= updatePeriod) {
-					updateCounter -= updatePeriod;
+				if (updateCounter >= updatePeriod && changed) {
+					changed = false;
+					updateCounter = 0;
 
 					DisplayResults (results);
 				}

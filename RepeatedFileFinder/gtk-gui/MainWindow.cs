@@ -24,6 +24,12 @@ public partial class MainWindow
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
 	
 	private global::Gtk.TreeView treeSearchResults;
+	
+	private global::Gtk.Statusbar statusbar1;
+	
+	private global::Gtk.Label lblPath;
+	
+	private global::Gtk.Label lblFileCount;
 
 	protected virtual void Build ()
 	{
@@ -77,6 +83,7 @@ public partial class MainWindow
 		this.hbox2 = new global::Gtk.HBox ();
 		this.hbox2.Name = "hbox2";
 		this.hbox2.Spacing = 6;
+		this.hbox2.BorderWidth = ((uint)(3));
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.vbox2 = new global::Gtk.VBox ();
 		this.vbox2.Name = "vbox2";
@@ -121,12 +128,37 @@ public partial class MainWindow
 		this.vbox1.Add (this.hbox2);
 		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
 		w10.Position = 1;
+		// Container child vbox1.Gtk.Box+BoxChild
+		this.statusbar1 = new global::Gtk.Statusbar ();
+		this.statusbar1.Name = "statusbar1";
+		this.statusbar1.Spacing = 6;
+		this.statusbar1.HasResizeGrip = false;
+		// Container child statusbar1.Gtk.Box+BoxChild
+		this.lblPath = new global::Gtk.Label ();
+		this.lblPath.Name = "lblPath";
+		this.lblPath.LabelProp = global::Mono.Unix.Catalog.GetString ("Current Path: ---");
+		this.statusbar1.Add (this.lblPath);
+		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.lblPath]));
+		w11.Position = 1;
+		// Container child statusbar1.Gtk.Box+BoxChild
+		this.lblFileCount = new global::Gtk.Label ();
+		this.lblFileCount.Name = "lblFileCount";
+		this.lblFileCount.LabelProp = global::Mono.Unix.Catalog.GetString ("Files Examined: ---");
+		this.statusbar1.Add (this.lblFileCount);
+		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.statusbar1 [this.lblFileCount]));
+		w12.Position = 2;
+		w12.Expand = false;
+		this.vbox1.Add (this.statusbar1);
+		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		w13.Position = 2;
+		w13.Expand = false;
+		w13.Fill = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
 		}
-		this.DefaultWidth = 694;
-		this.DefaultHeight = 338;
+		this.DefaultWidth = 714;
+		this.DefaultHeight = 487;
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 	}
